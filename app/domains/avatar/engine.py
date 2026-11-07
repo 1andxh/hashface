@@ -55,3 +55,18 @@ class HashDNA:
         return MouthExpression(self.digest[7] % 4)
         
 
+    @property
+    def body_matrix(self) -> tuple[(bool, ...), ...]:
+        cell_bytes = self.digest[8:8 + BODY_CELL_COUNT]
+        grid = [[False] * GRID_SIZE for _ in range(GRID_SIZE)]
+        idx = 0
+        for row in range(GRID_SIZE):
+            for col in range(HALF_COLS):
+                if (col, row) in RESERVED_HALF_CELLS:
+                    continue
+                filled = cell_bytes[idx] % 2 == 0
+                idx += 1
+
+                grid[row][col] = filled
+                grid[row][GRID_SIZE - 1 - col] = filled
+        return tuple(tuple(row) for row in grid)
